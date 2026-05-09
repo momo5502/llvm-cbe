@@ -32,10 +32,21 @@ if(USE_SYSTEM_LLVM)
     llvm-cbe.cpp
     )
   llvm_map_components_to_libnames(llvm_libs
+    Analysis
+    AsmParser
+    AsmPrinter
+    BitReader
     CBackendCodeGen
     CBackendInfo
+    CodeGen
+    Core
+    IRReader
+    MC
+    ScalarOpts
+    SelectionDAG
+    Support
+    Target
     )
   target_link_libraries(llvm-cbe
-    LLVM
     ${llvm_libs})
 endif()

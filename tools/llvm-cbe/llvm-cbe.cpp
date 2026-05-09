@@ -174,12 +174,6 @@ int main(int argc, char **argv) {
 
   llvm_shutdown_obj Y; // Call llvm_shutdown() on exit.
 
-  // Initialize targets first, so that --version shows registered targets.
-  InitializeAllTargets();
-  InitializeAllTargetMCs();
-  InitializeAllAsmPrinters();
-  InitializeAllAsmParsers();
-
   LLVMInitializeCBackendTarget();
   LLVMInitializeCBackendTargetInfo();
   LLVMInitializeCBackendTargetMC();
@@ -230,7 +224,7 @@ static int compileModule(char **argv, LLVMContext &Context) {
 
     // If we are supposed to override the target triple, do so now.
     if (!TargetTriple.empty())
-      mod->setTargetTriple(Triple::normalize(TargetTriple));
+      mod->setTargetTriple(Triple(Triple::normalize(TargetTriple)));
     TheTriple = Triple(mod->getTargetTriple());
   } else {
     TheTriple = Triple(Triple::normalize(TargetTriple));
@@ -284,7 +278,6 @@ static int compileModule(char **argv, LLVMContext &Context) {
 
   TargetOptions Options;
   Options.AllowFPOpFusion = codegen::getFuseFPOps();
-  Options.UnsafeFPMath = codegen::getEnableUnsafeFPMath();
   Options.NoInfsFPMath = codegen::getEnableNoInfsFPMath();
   Options.NoNaNsFPMath = codegen::getEnableNoNaNsFPMath();
   Options.HonorSignDependentRoundingFPMathOption =
@@ -297,7 +290,7 @@ static int compileModule(char **argv, LLVMContext &Context) {
   // Jackson Korba 9/30/14
   // OwningPtr<targetMachine>
   std::unique_ptr<TargetMachine> target(TheTarget->createTargetMachine(
-      TheTriple.getTriple(), codegen::getMCPU(), FeaturesStr, Options,
+      TheTriple, codegen::getMCPU(), FeaturesStr, Options,
       llvm::codegen::getRelocModel()));
   assert(target.get() && "Could not allocate target machine!");
   assert(mod && "Should have exited after outputting help!");

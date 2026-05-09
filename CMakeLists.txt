@@ -1,7 +1,7 @@
 if (NOT DEFINED LLVM_VERSION_MAJOR)
+  cmake_minimum_required(VERSION 3.20.0)
   project(llvm-cbe)
   set (USE_SYSTEM_LLVM 1)
-  cmake_minimum_required(VERSION 3.20.0)
   find_package(LLVM 22.1 REQUIRED CONFIG)
   message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
   message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
@@ -13,6 +13,9 @@ if (NOT DEFINED LLVM_VERSION_MAJOR)
   include(AddLLVM)
 
   set (CMAKE_CXX_STANDARD 17)
+  if(MSVC AND NOT DEFINED CMAKE_MSVC_RUNTIME_LIBRARY)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  endif()
 endif()
 
 add_subdirectory(lib)

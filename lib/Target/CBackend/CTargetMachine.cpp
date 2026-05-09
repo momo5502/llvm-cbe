@@ -28,7 +28,6 @@ bool CTargetMachine::addPassesToEmitFile(PassManagerBase &PM,
   if (FileType != CodeGenFileType::AssemblyFile)
     return true;
 
-  PM.add(new TargetPassConfig(*this, PM));
   PM.add(createGCLoweringPass());
 
   // Remove exception handling with LowerInvokePass. This would be done with
@@ -55,7 +54,11 @@ CTargetMachine::getSubtargetImpl(const Function &) const {
 bool CTargetSubtargetInfo::enableAtomicExpand() const { return true; }
 
 const TargetLowering *CTargetSubtargetInfo::getTargetLowering() const {
-  return &Lowering;
+  return Lowering.get();
+}
+
+const TargetRegisterInfo *CTargetSubtargetInfo::getRegisterInfo() const {
+  return nullptr;
 }
 
 } // namespace llvm
